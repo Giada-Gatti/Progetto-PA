@@ -1,6 +1,5 @@
 import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../database';
-
+import { sequelize } from '../database/database';
 
 export class Match extends Model {
   public id!: number;
