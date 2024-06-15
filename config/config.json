@@ -1,0 +1,23 @@
+{
+  "development": {
+    "username": "user",
+    "password": "user",
+    "database": "TicTacToe",
+    "host": "LAPTOP-4NH6KED8",
+    "dialect": "mssql"
+  },
+  "test": {
+    "username": "user",
+    "password": "user",
+    "database": "TicTacToe",
+    "host": "LAPTOP-4NH6KED8",
+    "dialect": "mssql"
+  },
+  "production": {
+  "username": "user",
+    "password": "user",
+    "database": "TicTacToe",
+    "host": "LAPTOP-4NH6KED8",
+    "dialect": "mssql"
+  }
+}

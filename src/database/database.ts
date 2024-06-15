@@ -15,10 +15,3 @@ export const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USER
   }
 });
 
-// export const sequelize = new Sequelize("TicTacToe", "user", "user", {
-//   host: "LAPTOP-4NH6KED8",
-//   dialect: "mssql",
-//   port: 1433,
-// });
-
-

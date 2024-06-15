@@ -1,11 +1,22 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../database/database';
+import bcrypt from 'bcryptjs';
 
 export class User extends Model {
   public id!: number;
   public email!: string;
   public password!: string;
   public credit!: number;
+
+  static async hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return await bcrypt.hash(password, saltRounds);
+  }
+
+  checkPassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.password);
+  }
+
 }
 
 User.init({
@@ -30,5 +41,5 @@ User.init({
   },
 }, {
   sequelize,
-  modelName: 'User',
+  modelName: 'User'
 });
