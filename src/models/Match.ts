@@ -3,13 +3,15 @@ import { sequelize } from '../database/database';
 
 export class Match extends Model {
   public id!: number;
-  public type!: string;
+  public isAgainstAI!: boolean;
   public status!: string;
   public currentPlayerId!: number;
-//   public opponentEmail?: string;
-  public opponentPlayerId!: number;
+  //public opponentEmail?: string;
+  //public opponentPlayerId!: number;
+  public player1Id!: number;
+  public player2Id!: number;
   public winnerId?: number;
-  public maxTime?: number;
+  public maxMoveTime?: number;
   public createdAt!: Date;
   public updatedAt!: Date;
 }
@@ -20,8 +22,8 @@ Match.init({
     autoIncrement: true,
     primaryKey: true,
   },
-  type: {
-    type: DataTypes.STRING,
+  isAgainstAI: {
+    type: DataTypes.BOOLEAN,
     allowNull: false,
   },
   status: {
@@ -32,13 +34,18 @@ Match.init({
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  opponentPlayerId: {
+  player1Id: {
     type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  player2Id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
   winnerId: {
     type: DataTypes.INTEGER,
   },
-  maxTime: {
+  maxMoveTime: {
     type: DataTypes.INTEGER,
   }
 }, {

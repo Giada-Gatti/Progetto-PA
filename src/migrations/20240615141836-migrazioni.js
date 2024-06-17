@@ -44,8 +44,8 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true
       },
-      type: {
-        type: Sequelize.STRING,
+      isAgainstAI: {
+        type: Sequelize.BOOLEAN,
         allowNull: false
       },
       status: {
@@ -56,13 +56,18 @@ module.exports = {
         type: Sequelize.INTEGER,
         allowNull: false
       },
-      opponentPlayerId: {
-        type: Sequelize.INTEGER
+      player1Id: {
+        type: Sequelize.INTEGER,
+        allowNull: false
+      },
+      player2Id: {
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       winnerId: {
         type: Sequelize.INTEGER
       },
-      maxTime: {
+      maxMoveTime: {
         type: Sequelize.INTEGER
       },
       createdAt: {

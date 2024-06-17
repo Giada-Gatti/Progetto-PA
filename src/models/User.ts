@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../database/database';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcrypt';
 
 export class User extends Model {
   public id!: number;
