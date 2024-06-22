@@ -1,19 +1,25 @@
 import { Model, DataTypes } from 'sequelize';
 import { sequelize } from '../database/database';
 
+export enum Status {
+  ACTIVE = 'ACTIVE',
+  FINISHED = 'FINISHED',
+  ABANDONED = 'ABANDONED'
+}
+
 export class Match extends Model {
   public id!: number;
   public isAgainstAI!: boolean;
-  public status!: string;
+  public status!: Status;
   public currentPlayerId!: number;
-  //public opponentEmail?: string;
-  //public opponentPlayerId!: number;
   public player1Id!: number;
   public player2Id!: number;
   public winnerId?: number;
   public maxMoveTime?: number;
   public createdAt!: Date;
   public updatedAt!: Date;
+  public lastMoveAt?: Date;
+  public board!: string;
 }
 
 Match.init({
@@ -27,7 +33,7 @@ Match.init({
     allowNull: false,
   },
   status: {
-    type: DataTypes.STRING,
+    type: DataTypes.ENUM(typeof Status),
     allowNull: false,
   },
   currentPlayerId: {
@@ -47,7 +53,17 @@ Match.init({
   },
   maxMoveTime: {
     type: DataTypes.INTEGER,
-  }
+  },
+  lastMoveAt:{
+    type: DataTypes.DATE
+  },
+  board: {
+    type: DataTypes.STRING(9),
+    defaultValue: '---------',
+    validate: {
+      len: [9, 9],
+    },
+  },
 }, {
   sequelize,
   modelName: 'Match',

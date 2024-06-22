@@ -1,3 +1,5 @@
+//configurazione database per Sequelize
+
 require('dotenv').config();
 
 module.exports = {

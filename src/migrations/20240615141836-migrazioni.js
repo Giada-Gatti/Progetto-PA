@@ -24,6 +24,10 @@ module.exports = {
         allowNull: false,
         defaultValue: 10
       },
+      role: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
@@ -79,6 +83,16 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE,
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      board: {
+        type: Sequelize.STRING,
+        defaultValue: '---------',
+        validate: {
+          len: [9, 9],
+        },
+      },
+      lastMoveAt:{
+        type: Sequelize.DATE
       }
     });
 

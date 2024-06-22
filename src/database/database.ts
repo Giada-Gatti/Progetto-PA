@@ -7,11 +7,11 @@ export const sequelize = new Sequelize(process.env.DB_NAME!, process.env.DB_USER
   host: process.env.DB_HOST,
   dialect: process.env.DB_DIALECT as 'mssql',
   port: parseInt(process.env.DB_PORT!, 10),
-  dialectOptions: {
-    options: {
-      encrypt: true, // Abilita la crittografia
-      enableArithAbort: true,
-    }
-  }
+  // dialectOptions: {
+  //   options: {
+  //     encrypt: true, // Abilita la crittografia
+  //     enableArithAbort: true,
+  //   }
+  // }
 });
 

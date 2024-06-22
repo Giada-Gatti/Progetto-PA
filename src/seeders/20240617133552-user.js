@@ -11,21 +11,25 @@ module.exports = {
         email: 'user1@example.com',
         password:  bcrypt.hashSync('password123', 10),
         credit: 10,
+        role: 'user',
       },
       {
         email: 'user2@example.com',
-        password: bcrypt.hashSync('password1234', 10),
+        password: bcrypt.hashSync('password124', 10),
         credit: 20,
+        role: 'admin',
       },
       {
         email: 'user3@example.com',
-        password: bcrypt.hashSync('password1235', 10),
+        password: bcrypt.hashSync('password125', 10),
         credit: 8,
+        role: 'user',
       },
       {
         email: 'user4@example.com',
-        password: bcrypt.hashSync('password1236', 10),
+        password: bcrypt.hashSync('password126', 10),
         credit: 5,
+        role: 'user',
       },
     ]);
   },
