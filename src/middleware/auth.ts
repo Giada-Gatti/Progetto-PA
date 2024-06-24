@@ -12,7 +12,7 @@ const authenticateJWT = async (req: Request, res: Response, next: NextFunction) 
     }
 
     // Verifica e decodifica il token JWT
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { id: number }; // Aggiungi tipizzazione se necessario
+    const decoded = jwt.verify(token, process.env.PUBLIC_KEY as string) as { id: number }; 
 
     // Trova l'utente nel database usando l'id dal token
     const user = await User.findByPk(decoded.id);

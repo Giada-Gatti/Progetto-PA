@@ -7,7 +7,7 @@ import matchService from '../services/matchService';
 // Funzione per ottenere lo stato di una partita
 export const getMatchStatus = async (req: Request, res: Response) => {
   const matchId = Number(req.params.id);
-  const userId = req.user!.id; // Assuming user is authenticated
+  const userId = req.user!.id; // Assumendo che l'utente sia autenticato
 
   try {
     // Verifica se l'utente ha il permesso di accedere a questa partita
@@ -39,10 +39,10 @@ export const getMatchStatus = async (req: Request, res: Response) => {
 // Funzione per creare una mossa in una partita
 export const makeMove = async (req: Request, res: Response) => {
   try {
-    const { macthId, position } = req.body;
+    const { matchId, position } = req.body;
     const user = req.user as User;
 
-    const match = await matchService.makeMove(macthId, user.id, position);
+    const match = await matchService.makeMove(matchId, user.id, position);
 
     // Deduci i token per la mossa
     user.credit -= 0.05;
@@ -57,7 +57,7 @@ export const makeMove = async (req: Request, res: Response) => {
 // Funzione per abbandonare una partita
 export const abandonMatch = async (req: Request, res: Response) => {
   const matchId = Number(req.params.id);
-  const playerId = req.user!.id; // Assuming user is authenticated
+  const playerId = req.user!.id; // Assumendo che l'utente sia autenticato
 
   try {
     // Verifica se l'utente è uno dei giocatori della partita
@@ -78,7 +78,7 @@ export const abandonMatch = async (req: Request, res: Response) => {
 // Funzione per ottenere lo storico delle mosse di una partita
 export const getMoveHistory = async (req: Request, res: Response) => {
   const matchId = Number(req.params.id);
-  const userId = req.user!.id; // Assuming user is authenticated
+  const userId = req.user!.id; // Assumendo che l'utente sia autenticato
 
   try {
    
@@ -111,7 +111,7 @@ export const getMoveHistory = async (req: Request, res: Response) => {
   }
 };  
 
-// Funzione per ottenere la classifica
+// Funzione per ottenere la classifica( da sviluppare ancora)
 export const getLeaderboard = async (req: Request, res: Response) => {
   try {
     // Implementa la logica per ottenere la classifica
@@ -129,13 +129,13 @@ export const getLeaderboard = async (req: Request, res: Response) => {
 // Funzione per creare una nuova partita
 export const createMatch = async (req: Request, res: Response) => {
   const { isAgainstAI, opponentEmail, maxMoveTime } = req.body;
-  const currentPlayerId = req.user!.id; // Assuming user is authenticated
+  const currentPlayerId = req.user!.id; // L'utente che fa la richiesta si assume che è già autenticato
 
   try {
-    // Determine cost in tokens based on match type
+    // Determina il costo in token in base al tipo di partita
     let costTokens = isAgainstAI == false ? 0.45 : 0.75;
 
-    // Check if opponentEmail is provided (only for user-vs-user)
+    // Controlla se la partita è contro un altro giocatore, non contro l'AI
     let player2Id: number | undefined = undefined;
     if (isAgainstAI == false) {
       if (!opponentEmail) {
@@ -148,7 +148,7 @@ export const createMatch = async (req: Request, res: Response) => {
       player2Id = opponentUser.id;
     }
 
-    // Create the match in database
+    // Crea un nuovo record di partita nel database
     const newMatch = await Match.create({
       isAgainstAI: isAgainstAI,
       status: Status.ACTIVE,
@@ -158,7 +158,7 @@ export const createMatch = async (req: Request, res: Response) => {
       maxMoveTime: maxMoveTime,
     });
 
-    // Deduct tokens from user's credit
+    // Gestire il credito dell'utente
     const currentUser = await User.findByPk(currentPlayerId);
     if (!currentUser) {
       return res.status(404).json({ error: 'User not found.' });
@@ -169,7 +169,7 @@ export const createMatch = async (req: Request, res: Response) => {
     currentUser.credit -= costTokens;
     await currentUser.save();
 
-    // Optionally, you can return the updated user object with reduced credit
+    // Volendo,   si può restituire l'oggetto utente aggiornato
     // const updatedUser = await User.findByPk(currentPlayerId);
 
     res.status(201).json({ message: 'Match created successfully.', match: newMatch });

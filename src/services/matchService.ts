@@ -33,7 +33,7 @@ class MatchService {
 
     // Verifica il limite di tempo
     if (match.maxMoveTime && match.lastMoveAt) {
-      const timeSinceLastMove = Date.now() - match.lastMoveAt.getTime(); //tempo passato in ms
+      const timeSinceLastMove = Date.now() - match.lastMoveAt.getTime(); //tempo passato in ms dall'ultima mossa
       if (timeSinceLastMove > match.maxMoveTime * 1000) {
         match.status = Status.FINISHED;
         match.winnerId = match.currentPlayerId === match.player1Id ? match.player2Id! : match.player1Id;
@@ -107,7 +107,7 @@ class MatchService {
       throw new Error('Match not found');
     }
 
-    if (match.status == Status.ACTIVE) {
+    if (match.status != Status.ACTIVE) {
       throw new Error('Match is not active');
     }
 
