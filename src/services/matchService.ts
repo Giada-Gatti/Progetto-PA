@@ -15,7 +15,7 @@ class MatchService {
     return MatchService.instance;
   }
 
-  //getMatchStatus rimane nel controller perchè non ha logica
+ 
 
   public async makeMove(matchId: number, playerId: number, position: number): Promise<Match> {
     const match = await Match.findByPk(matchId);
@@ -25,6 +25,10 @@ class MatchService {
 
     if (match.status !== Status.ACTIVE) {
       throw new Error('Match is not active');
+    }
+    //controllo giocatori ammessi alla partita
+    if( match.player1Id !== playerId && match.player2Id !== playerId){
+      throw new Error ('You are not a player in this match');
     }
 
     if (match.currentPlayerId !== playerId) {
@@ -48,14 +52,15 @@ class MatchService {
     }
 
     match.lastMoveAt = new Date();
-    await match.save();
+   
+    
 
     const symbol = match.player1Id === playerId ? 'X' : 'O';
     const newBoard = match.board.split('');
     newBoard[position] = symbol;
     match.board = newBoard.join('');
 
-    await Move.create({ matchId, playerId, position });
+    await Move.create({ matchId, playerId, position, symbol });
 
     const winner = this.checkWin(match.board);
     if (winner) {
@@ -72,8 +77,7 @@ class MatchService {
     if (match.isAgainstAI && match.status === Status.ACTIVE) {
       return this.makeAIMove(match);
     }
-
-    return match;
+      return match;
   }
 
   private async makeAIMove(match: Match): Promise<Match> {
@@ -107,7 +111,7 @@ class MatchService {
       throw new Error('Match not found');
     }
 
-    if (match.status != Status.ACTIVE) {
+    if (match.status != Status.ACTIVE ) {
       throw new Error('Match is not active');
     }
 

@@ -7,28 +7,28 @@ import matchService from '../services/matchService';
 // Funzione per ottenere lo stato di una partita
 export const getMatchStatus = async (req: Request, res: Response) => {
   const matchId = Number(req.params.id);
-  const userId = req.user!.id; // Assumendo che l'utente sia autenticato
+  const userId = req.user!.id; 
 
   try {
-    // Verifica se l'utente ha il permesso di accedere a questa partita
     const match = await Match.findByPk(matchId);
     if (!match) {
       return res.status(404).json({ error: 'Match not found.' });
     }
 
-    // Verifica se l'utente è uno dei giocatori della partita
+    
     if (match.player1Id !== userId && match.player2Id !== userId) {
       return res.status(403).json({ error: 'Unauthorized: You are not a player of this match.' });
     }
 
     // Ottieni lo stato attuale della partita (turno, stato, vincitore, ecc.)
     // Esempio: ritorna lo stato della partita in un oggetto JSON
+    const user = await User.findByPk(match.winnerId);
     res.status(200).json({
       id: match.id,
       status: match.status,
       currentPlayerId: match.currentPlayerId,
       winnerId: match.winnerId,
-      // Altri campi dello stato della partita
+      winnerEmail: user?.email,
     });
   } catch (error) {
     console.error('Error getting match status:', error);
@@ -111,20 +111,41 @@ export const getMoveHistory = async (req: Request, res: Response) => {
   }
 };  
 
-// Funzione per ottenere la classifica( da sviluppare ancora)
+// Funzione per ottenere la classifica
 export const getLeaderboard = async (req: Request, res: Response) => {
   try {
-    // Implementa la logica per ottenere la classifica
-    // Esempio: consulta il database per ottenere i dati della classifica
+      const { order = 'DESC' } = req.query;
+      
+      const leaderboard = await User.findAll({
+        attributes: [
+          'username',
+          'matchesWon',
+          'matchesLost',
+          'matchesWonByAbandon',
+          'matchesLostByAbandon',
+          'matchesWonVsAI',
+          'matchesLostVsAI',
+          [
+            User.sequelize!.literal('matchesWon + matchesWonByAbandon'),
+            'totalScore'
+          ]
+        ],
+        order: [
+          [User.sequelize!.literal('totalScore'), order === 'DESC' ? 'DESC' : 'ASC']
+        ]
+      });
+
+      res.json(leaderboard);
+    } catch (error) {
+      res.status(500).json({ message: 'Errore nel recupero della classifica' });
+    }
 
     const leaderboard: never[] = []; // Esempio: array vuoto per la classifica
 
     res.status(200).json({ leaderboard });
-  } catch (error) {
-    console.error('Error getting leaderboard:', error);
-    res.status(500).json({ error: 'Internal server error.' });
-  }
-};
+  } ;
+  
+
 
 // Funzione per creare una nuova partita
 export const createMatch = async (req: Request, res: Response) => {

@@ -22,6 +22,13 @@ export class User extends Model {
   public credit!: number;
   public role!: Role;
 
+  // public matchesWon!: number;
+  // public matchesLost!: number;
+  // public matchesWonByAbandon!:number;
+  // public matchesLostByAbandon!: number;
+  // public matchesWonVsAI!: number;
+  // public matchesLostVsAI!: number;
+
   static async hashPassword(password: string): Promise<string> {
     const saltRounds = 10;
     return await bcrypt.hash(password, saltRounds);
@@ -57,6 +64,30 @@ User.init({
     type: DataTypes.ENUM(typeof Role),
     allowNull: false,
   },
+  // matchesWon: {
+  //   type: DataTypes.INTEGER,
+  //   defaultValue: 0,
+  // },
+  // matchesLost: {
+  //   type: DataTypes.INTEGER,
+  //   defaultValue: 0,
+  // },
+  // matchesWonByAbandon: {
+  //   type: DataTypes.INTEGER,
+  //   defaultValue: 0,
+  // },
+  // matchesLostByAbandon: {
+  //   type: DataTypes.INTEGER,
+  //   defaultValue: 0,
+  // },
+  // matchesWonVsAI: {
+  //   type: DataTypes.INTEGER,
+  //   defaultValue: 0,
+  // },
+  // matchesLostVsAI: {
+  //   type: DataTypes.INTEGER,
+  //   defaultValue: 0,
+  // },
 }, {
   sequelize,
   modelName: 'User'
