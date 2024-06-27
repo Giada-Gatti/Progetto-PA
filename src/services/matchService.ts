@@ -40,7 +40,14 @@ class MatchService {
       const timeSinceLastMove = Date.now() - match.lastMoveAt.getTime(); //tempo passato in ms dall'ultima mossa
       if (timeSinceLastMove > match.maxMoveTime * 1000) {
         match.status = Status.FINISHED;
-        match.winnerId = match.currentPlayerId === match.player1Id ? match.player2Id! : match.player1Id;
+        const [winnerId, loserId] = match.currentPlayerId === match.player1Id 
+                                        ? [match.player2Id!, match.player1Id] 
+                                        : [match.player1Id, match.player2Id!];
+        match.winnerId = winnerId;
+
+
+        this.incrMatchesWonOrLose(winnerId, loserId, match.isAgainstAI, false);
+        
         await match.save();
         throw new Error('Time limit exceeded');
       }
@@ -65,7 +72,12 @@ class MatchService {
     const winner = this.checkWin(match.board);
     if (winner) {
       match.status = Status.FINISHED;
-      match.winnerId = playerId;
+      const [winnerId, loserId] = match.currentPlayerId === match.player1Id 
+                                      ? [match.player2Id!, match.player1Id] 
+                                      : [match.player1Id, match.player2Id!];
+      match.winnerId = winnerId;
+      
+      this.incrMatchesWonOrLose(winnerId, loserId, match.isAgainstAI, false);
     } else if (!match.board.includes('-')) {
       match.status = Status.FINISHED;
     } else {
@@ -120,11 +132,56 @@ class MatchService {
     }
 
     match.status = Status.ABANDONED;
-    match.winnerId = match.player1Id === playerId ? match.player2Id! : match.player1Id;
+    const [winnerId, loserId] = match.currentPlayerId === match.player1Id 
+                                        ? [match.player2Id!, match.player1Id] 
+                                        : [match.player1Id, match.player2Id!];
+        match.winnerId = winnerId;
+
+
+        this.incrMatchesWonOrLose(winnerId, loserId, match.isAgainstAI, true);
+
+
     await match.save();
 
     return match;
   }
+
+  // Funzione che incrementa e decrementa il numero di partite vinte/perse
+  public async incrMatchesWonOrLose(winnerId: number, loserId: number, isAgainstAI: boolean, abandonMatch: boolean) : Promise<void>{
+    const winnerUser =await User.findByPk(winnerId);
+        const loserUser = await User.findByPk(loserId);
+        
+        if( !winnerUser ) {
+          throw new Error('Winner not found');
+        } 
+        
+
+        if( !loserUser ) {
+          throw new Error('Loser not found');
+        } 
+
+        if( abandonMatch) {
+          winnerUser.matchesWonByAbandon +=1;
+          loserUser.matchesLostByAbandon +=1;
+        } else {
+        
+          if( isAgainstAI){
+            winnerUser.matchesWonVsAI +=1;
+            loserUser.matchesLostVsAI +=1;
+          } else {
+          winnerUser.matchesWon +=1;
+          loserUser.matchesLost +=1
+        }
+        }
+
+        
+
+        await winnerUser.save();
+        await loserUser.save();
+
+  }
 }
+
+
 
 export default MatchService.getInstance();

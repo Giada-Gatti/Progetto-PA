@@ -11,7 +11,7 @@ router.post('/match', auth, createMatch);
 router.post('/match/:id/move', auth, makeMove);
 router.post('/match/:id/abandon', auth, abandonMatch);
 router.get('/match/:id/status', auth, getMatchStatus);
-router.get('/match/:id/moves', auth, getMoveHistory);
+router.get('/match/moves', auth, getMoveHistory);
 router.get('/leaderboard', getLeaderboard);
 
 export default router;

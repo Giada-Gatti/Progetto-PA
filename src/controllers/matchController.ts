@@ -4,6 +4,7 @@ import { Match, Status } from '../models/Match';
 import { Move, Symbol } from '../models/Move';
 import matchService from '../services/matchService';
 
+
 // Funzione per ottenere lo stato di una partita
 export const getMatchStatus = async (req: Request, res: Response) => {
   const matchId = Number(req.params.id);
@@ -111,6 +112,11 @@ export const getMoveHistory = async (req: Request, res: Response) => {
   }
 };  
 
+
+
+   
+
+
 // Funzione per ottenere la classifica
 export const getLeaderboard = async (req: Request, res: Response) => {
   try {
@@ -199,3 +205,5 @@ export const createMatch = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error.' });
   }
 };
+
+

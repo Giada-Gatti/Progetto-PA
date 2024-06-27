@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { User } from '../models/User';
+import { Role, User } from '../models/User';
 
 
 
@@ -31,3 +31,13 @@ const authenticateJWT = async (req: Request, res: Response, next: NextFunction) 
 };
 
 export default authenticateJWT;
+
+export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
+  if (req.user && req.user.role === Role.admin)
+   {
+    next();
+  } else {
+    res.status(403).json({ message: 'Access denied. Admin role required.' });
+  }
+};
+
