@@ -10,9 +10,8 @@ Match.belongsTo(User, { foreignKey: 'player1Id', as: 'player1' });
 Match.belongsTo(User, { foreignKey: 'player2Id', as: 'player2' });
 Match.belongsTo(User, { foreignKey: 'currentPlayerId', as: 'currentPlayer' });
 Match.belongsTo(User, { foreignKey: 'winnerId', as: 'winnerUser' });
-Match.hasMany(Move);
 
-Move.belongsTo(Match);
+Move.belongsTo(Match, { foreignKey: 'matchId',  as: 'match'} );
 Move.belongsTo(User, { foreignKey: 'playerId' });
 
-export { User, Match, Move };
+ export { User, Match, Move };

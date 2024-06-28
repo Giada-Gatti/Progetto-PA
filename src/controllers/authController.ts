@@ -1,11 +1,15 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models';
+import bcrypt from 'bcrypt';
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, password, role } = req.body;
-    const user = await User.create({ email, password, role });
+    // Crittografia della password
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const user = await User.create({ email, password:hashedPassword, role });
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.PRIVATE_KEY!, { expiresIn: '1d', algorithm: 'RS256' });
     res.status(201).send({ user, token });
   } catch (error) {

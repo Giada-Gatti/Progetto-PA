@@ -3,6 +3,9 @@ import { Role, User } from '../models/User';
 import { Match, Status } from '../models/Match';
 import { Move, Symbol } from '../models/Move';
 import matchService from '../services/matchService';
+import { Op } from 'sequelize';
+import { generatePDF } from '../services/pdfService';
+
 
 
 // Funzione per ottenere lo stato di una partita
@@ -78,39 +81,34 @@ export const abandonMatch = async (req: Request, res: Response) => {
 
 // Funzione per ottenere lo storico delle mosse di una partita
 export const getMoveHistory = async (req: Request, res: Response) => {
-  const matchId = Number(req.params.id);
-  const userId = req.user!.id; // Assumendo che l'utente sia autenticato
-
   try {
-   
-    const match = await Match.findByPk(matchId);
-    if (!match) {
-      return res.status(404).json({ error: 'Match not found.' });
+    const { format, matchId, startDate, endDate } = req.body;
+
+    let whereClause: any = { matchId };
+
+    // Aggiungi il filtro temporale solo se sono specificate entrambe le date
+    if (startDate && endDate) {
+      whereClause.createdAt = {
+        [Op.between]: [new Date(startDate as string), new Date(endDate as string)]
+      };
     }
 
-    const user = await User.findByPk(userId);
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    if ((match.player1Id !== userId && match.player2Id !== userId) || user.role == Role.admin) {
-      return res.status(403).json({ error: 'Unauthorized: You are not a player of this match.' });
-    }
-
-    // Ottieni lo storico delle mosse per questa partita
-    const moves = await Move.findAll({
-      where: { matchId: matchId },
-      order: [['createdAt', 'ASC']],
-      include: [{ model: User, attributes: ['id', 'email'] }]
+    const moves = await Move.findAll({ 
+      where: whereClause,
+      order: [['createdAt', 'ASC']]
     });
 
-    // Esempio: ritorna lo storico delle mosse in un array JSON
-    res.status(200).json({ moves });
+    if (format === 'pdf') {
+      const pdfBuffer = await generatePDF(moves);
+      res.contentType('application/pdf');
+      res.send(pdfBuffer);
+    } else {
+      res.json(moves);
+    }
   } catch (error) {
-    console.error('Error getting move history:', error);
-    res.status(500).json({ error: 'Internal server error.' });
+    res.status(500).json({ message: 'Error fetching move history', error: (error as Error).message });
   }
-};  
+};
 
 
 
@@ -124,7 +122,7 @@ export const getLeaderboard = async (req: Request, res: Response) => {
       
       const leaderboard = await User.findAll({
         attributes: [
-          'username',
+          'email',
           'matchesWon',
           'matchesLost',
           'matchesWonByAbandon',
@@ -140,15 +138,10 @@ export const getLeaderboard = async (req: Request, res: Response) => {
           [User.sequelize!.literal('totalScore'), order === 'DESC' ? 'DESC' : 'ASC']
         ]
       });
-
-      res.json(leaderboard);
+      res.status(200).json({ leaderboard });
     } catch (error) {
       res.status(500).json({ message: 'Errore nel recupero della classifica' });
     }
-
-    const leaderboard: never[] = []; // Esempio: array vuoto per la classifica
-
-    res.status(200).json({ leaderboard });
   } ;
   
 
