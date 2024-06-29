@@ -49,7 +49,7 @@ Match.init({
     allowNull: false,
   },
   winnerId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.INTEGER
   },
   maxMoveTime: {
     type: DataTypes.INTEGER,

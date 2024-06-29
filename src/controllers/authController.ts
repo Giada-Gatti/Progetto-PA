@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import bcrypt from 'bcrypt';
+import { Role } from '../models/User';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -23,6 +24,10 @@ export const login = async (req: Request, res: Response) => {
     const user = await User.findOne({ where: { email } });
     if (!user || !(await user.checkPassword(password))) {
       return res.status(401).send({ error: 'Invalid login credentials' });
+    }
+
+    if(user.role = Role.ai){
+      return res.status(401).send({ error: 'AI not loggable' });
     }
     
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.PRIVATE_KEY!, { expiresIn: '1d', algorithm: 'RS256' });

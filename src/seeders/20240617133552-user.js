@@ -30,6 +30,12 @@ module.exports = {
         credit: 5,
         role: 'user',
       },
+      {
+        email: 'ai@ai.com',
+        password: bcrypt.hashSync('passwordAI', 10),
+        credit: 10,
+        role: 'ai',
+      },
     ]);
   },
   

@@ -1,5 +1,6 @@
 import { Match, Move, User } from '../models';
 import { Status } from '../models/Match';
+import { Role } from '../models/User';
 var ticTacToeAiEngine = require("tic-tac-toe-ai-engine");
 
 
@@ -60,8 +61,6 @@ class MatchService {
 
     match.lastMoveAt = new Date();
    
-    
-
     const symbol = match.player1Id === playerId ? 'X' : 'O';
     const newBoard = match.board.split('');
     newBoard[position] = symbol;
@@ -86,7 +85,9 @@ class MatchService {
 
     await match.save();
 
-    if (match.isAgainstAI && match.status === Status.ACTIVE) {
+    const aiUser = await User.findOne({ where: { role: Role.ai } });
+
+    if (match.isAgainstAI && match.currentPlayerId == aiUser?.id && match.status === Status.ACTIVE) {
       return this.makeAIMove(match);
     }
       return match;
@@ -94,8 +95,15 @@ class MatchService {
 
   private async makeAIMove(match: Match): Promise<Match> {
     const ai = ticTacToeAiEngine;
-    const aiOutput = ai.computeMove(match.board);
-    const position = aiOutput.depth - 1; //prendiamo la posizione della mossa dell'AI (-1 in quanto la board viene contata da 1)
+
+    // Converti la stringa in un array di caratteri
+    let boardBefore = Array.from(match.board);
+
+    // Mappa l'array e sostituisci '-' con un carattere vuoto
+    boardBefore = boardBefore.map(char => char === '-' ? '' : char);
+
+    let boardAfter = ai.computeMove(boardBefore);
+    const position = this.getPositionAI(boardBefore, boardAfter) - 1;
 
     return this.makeMove(match.id, match.player2Id!, position);
   }
@@ -179,6 +187,15 @@ class MatchService {
         await winnerUser.save();
         await loserUser.save();
 
+  }
+
+  public getPositionAI(boardBefore : string[], boardAfter: string[]) {
+    for (let i = 1; i < boardBefore.length; i++) {
+      if (boardBefore[i] !== boardAfter[i]) {
+        return i;
+      }
+    }
+    return -1; // Nessun cambiamento trovato
   }
 }
 

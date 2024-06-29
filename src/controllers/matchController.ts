@@ -152,12 +152,24 @@ export const createMatch = async (req: Request, res: Response) => {
   const currentPlayerId = req.user!.id; // L'utente che fa la richiesta si assume che è già autenticato
 
   try {
+
+    const currentPlayer = await User.findByPk(currentPlayerId);
+
+    if (currentPlayer == null) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if(currentPlayer?.matchId != null){
+      return res.status(400).json({ error: 'User is playing another match' });
+    }
+
     // Determina il costo in token in base al tipo di partita
     let costTokens = isAgainstAI == false ? 0.45 : 0.75;
 
     // Controlla se la partita è contro un altro giocatore, non contro l'AI
     let player2Id: number | undefined = undefined;
     if (isAgainstAI == false) {
+
       if (!opponentEmail) {
         return res.status(400).json({ error: 'Opponent email is required for user-vs-user match.' });
       }
@@ -165,7 +177,21 @@ export const createMatch = async (req: Request, res: Response) => {
       if (!opponentUser) {
         return res.status(404).json({ error: 'Opponent user not found.' });
       }
+
+      if(opponentUser?.matchId != null){
+        return res.status(400).json({ error: 'Opponent is playing another match' });
+      }
+
       player2Id = opponentUser.id;
+    } else {
+      const opponentAI = await User.findOne({ where: { role: Role.ai } });
+
+      if (!opponentAI) {
+        return res.status(404).json({ error: 'Opponent AI not found.' });
+      }
+      
+      player2Id = opponentAI.id;
+
     }
 
     // Crea un nuovo record di partita nel database

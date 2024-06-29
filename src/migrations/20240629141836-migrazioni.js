@@ -28,6 +28,9 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      matchId: {
+        type: Sequelize.INTEGER,
+      },
       matchesWon: {
         type: Sequelize.INTEGER,
         allowNull: false,

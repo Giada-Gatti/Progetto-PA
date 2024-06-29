@@ -11,7 +11,8 @@ export interface AuthenticatedUser {
 
 export enum Role {
   user = 'user',
-  admin = 'admin'
+  admin = 'admin',
+  ai  = 'ai'
 }
 
 export class User extends Model {
@@ -21,6 +22,7 @@ export class User extends Model {
   public password!: string;
   public credit!: number;
   public role!: Role;
+  public matchId?: number;
 
   public matchesWon!: number;
   public matchesLost!: number;
@@ -49,7 +51,7 @@ User.init({
   email: {
     type: DataTypes.STRING,
     allowNull: false,
-    unique: true,
+    unique: 'usr_email',
   },
   password: {
     type: DataTypes.STRING,
@@ -58,40 +60,43 @@ User.init({
   credit: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    defaultValue: 10,
+    defaultValue: ()=>10, 
   },
   role: {
     type: DataTypes.ENUM(typeof Role),
     allowNull: false,
   },
+  matchId: {
+    type: DataTypes.INTEGER,
+  },
   matchesWon: {
     type: DataTypes.INTEGER,
-    defaultValue: 0,
+    defaultValue: ()=>0,
     allowNull: false,
   },
   matchesLost: {
     type: DataTypes.INTEGER,
-    defaultValue: 0,
+    defaultValue: ()=>0,
     allowNull: false,
   },
   matchesWonByAbandon: {
     type: DataTypes.INTEGER,
-    defaultValue: 0,
+    defaultValue: ()=>0,
     allowNull: false,
   },
   matchesLostByAbandon: {
     type: DataTypes.INTEGER,
-    defaultValue: 0,
+    defaultValue: ()=>0,
     allowNull: false,
   },
   matchesWonVsAI: {
     type: DataTypes.INTEGER,
-    defaultValue: 0,
+    defaultValue: ()=>0,
     allowNull: false,
   },
   matchesLostVsAI: {
     type: DataTypes.INTEGER,
-    defaultValue: 0,
+    defaultValue: ()=>0,
     allowNull: false,
   },
 }, {
