@@ -17,7 +17,7 @@ export const generatePDF = (moves: Move[]): Promise<Buffer> => {
 
     moves.forEach((move) => {
       doc.fontSize(12).text(
-        `Partita: ${move.matchId}, Posizione: ${move.position}, Data: ${move.createdAt.toLocaleString()}`
+        `Partita: ${move.matchId}, Posizione: ${move.position}, Simbolo: ${move.symbol}, Data: ${move.createdAt.toLocaleString()}`
       );
       doc.moveDown(0.5);
     });

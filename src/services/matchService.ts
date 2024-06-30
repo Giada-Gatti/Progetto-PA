@@ -72,8 +72,8 @@ class MatchService {
     if (winner) {
       match.status = Status.FINISHED;
       const [winnerId, loserId] = match.currentPlayerId === match.player1Id 
-                                      ? [match.player2Id!, match.player1Id] 
-                                      : [match.player1Id, match.player2Id!];
+                                      ? [match.player1Id!, match.player2Id] 
+                                      : [match.player2Id, match.player1Id!];
       match.winnerId = winnerId;
       
       this.incrMatchesWonOrLose(winnerId, loserId, match.isAgainstAI, false);
@@ -88,6 +88,7 @@ class MatchService {
     const aiUser = await User.findOne({ where: { role: Role.ai } });
 
     if (match.isAgainstAI && match.currentPlayerId == aiUser?.id && match.status === Status.ACTIVE) {
+      await match.save();  // Salva lo stato del match prima della mossa dell'IA
       return this.makeAIMove(match);
     }
       return match;
@@ -102,8 +103,8 @@ class MatchService {
     // Mappa l'array e sostituisci '-' con un carattere vuoto
     boardBefore = boardBefore.map(char => char === '-' ? '' : char);
 
-    let boardAfter = ai.computeMove(boardBefore);
-    const position = this.getPositionAI(boardBefore, boardAfter) - 1;
+    let boardAfter = ai.computeMove(boardBefore).nextBestGameState;
+    const position = this.getPositionAI(boardBefore, boardAfter);
 
     return this.makeMove(match.id, match.player2Id!, position);
   }
@@ -190,7 +191,7 @@ class MatchService {
   }
 
   public getPositionAI(boardBefore : string[], boardAfter: string[]) {
-    for (let i = 1; i < boardBefore.length; i++) {
+    for (let i = 0; i < boardBefore.length; i++) {
       if (boardBefore[i] !== boardAfter[i]) {
         return i;
       }

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { Role, User } from '../models/User';
+import { getCredit } from '../controllers/userController';
 
 
 
@@ -31,6 +32,14 @@ const authenticateJWT = async (req: Request, res: Response, next: NextFunction) 
 };
 
 export default authenticateJWT;
+
+export const checkCredit = async (req: Request, res: Response, next: NextFunction) => {
+  const user = await User.findByPk(req.user!.id);
+  if (user!.credit <= 0) {
+    return res.status(401).json({ message: 'Insufficient credit' });
+  }
+  next();
+};
 
 export const isAdmin = (req: Request, res: Response, next: NextFunction) => {
   if (req.user && req.user.role === Role.admin)

@@ -26,7 +26,7 @@ export const login = async (req: Request, res: Response) => {
       return res.status(401).send({ error: 'Invalid login credentials' });
     }
 
-    if(user.role = Role.ai){
+    if(user.role == Role.ai){
       return res.status(401).send({ error: 'AI not loggable' });
     }
     
