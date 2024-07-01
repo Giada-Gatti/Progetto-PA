@@ -46,85 +46,291 @@ Questo progetto implementa un backend per il gioco Tic Tac Toe, utilizzando tecn
 | POST | /recharge | Si |
 | GET | /credit | Si |
 
-- **/REGISTER**
-  Permette di registrare un nuovo utente, specificandone l'email, la password e il ruolo
+
+``` - /REGISTER ``` :
+Permette di registrare un nuovo utente, specificandone l'email, la password e il ruolo
+
+```json
+{
+    "user": {
+        "id": 6,
+        "email": "user6@example.com",
+        "password": "$2b$10$KPXmxLrIkaFrPt5lgoPsguQ35e2O5GHXvAGaE/AUdI4qBPasnCKTe",
+        "credit": 10,
+        "role": "user",
+        "matchId": null,
+        "matchesWon": 0,
+        "matchesLost": 0,
+        "matchesWonByAbandon": 0,
+        "matchesLostByAbandon": 0,
+        "matchesWonVsAI": 0,
+        "matchesLostVsAI": 0,
+        "createdAt": "2024-07-01T16:01:28.789Z",
+        "updatedAt": "2024-07-01T16:01:28.789Z",
+        "MatchId": null
+    }
+```
 
 
+``` - /LOGIN ``` : 
+```json
+{
+    "user": {
+        "id": 1,
+        "email": "user1@example.com",
+        "password": "$2b$10$yhL33V0K8RWF7EpFDSIwSOWmQGt4Ti.seJiGmVlP9PVBKAPUuO2ge",
+        "credit": 8,
+        "role": "user",
+        "matchId": null,
+        "matchesWon": 1,
+        "matchesLost": 0,
+        "matchesWonByAbandon": 0,
+        "matchesLostByAbandon": 0,
+        "matchesWonVsAI": 0,
+        "matchesLostVsAI": 0,
+        "createdAt": "2024-06-29T15:49:19.180Z",
+        "updatedAt": "2024-07-01T16:35:22.349Z",
+        "MatchId": null
+    }
+```
 
+```- /MATCH ``` :
+Permette di creare una nuova partita, specificando il tipo di giocatori, e-mail dell'avversario (solo nel caso di partita user vs user) e l'impostazione del tempo per effetturare una mossa
 
+```json
+{
+    "message": "Match created successfully.",
+    "match": {
+        "board": "---------",
+        "id": 32,
+        "isAgainstAI": false,
+        "status": "ACTIVE",
+        "currentPlayerId": 1,
+        "player1Id": 1,
+        "player2Id": 1,
+        "maxMoveTime": null,
+        "updatedAt": "2024-07-01T16:36:23.296Z",
+        "createdAt": "2024-07-01T16:36:23.296Z",
+        "winnerId": null,
+        "lastMoveAt": null
+    }
+}
+```
 
-
-- **/LOGIN**
-
-
-
-
-
-
-- **/MATCH**
-  Permette di creare una nuova partita, specificando il tipo di giocatori, e-mail dell'avversario (solo nel caso di partita user vs user) e l'impostazione del tempo per effetturare una mossa
-
-
-
-
-
-
-
-- **/MOVE**
-  Permette di effettuare una mossa in una partita verificando se è ammissibile o meno e andando a sottrarre il numero di token:
+``` - /MOVE ``` : 
+Permette di effettuare una mossa in una partita verificando se è ammissibile o meno e andando a sottrarre il numero di token:
   - 0.45 all'atto della creazione se user vs user
   - 0.75 se user VS IA
   - 0.05 per ogni mossa da parte degli utenti (anche IA)
+
+```json
+{
+    "id": 32,
+    "isAgainstAI": false,
+    "status": "ACTIVE",
+    "currentPlayerId": 1,
+    "player1Id": 1,
+    "player2Id": 1,
+    "winnerId": null,
+    "maxMoveTime": null,
+    "lastMoveAt": "2024-07-01T16:38:58.859Z",
+    "board": "----X----",
+    "createdAt": "2024-07-01T16:36:23.296Z",
+    "updatedAt": "2024-07-01T16:38:58.865Z"
+}
+```
  
+``` - /ABANDON ``` :
+Permette di abbandonare una partita
 
+```json
+{
+    "message": "Match abandoned successfully."
+}
+```
 
+``` - /STATUS ``` :
+Permette di valutare lo stato di una partita(di chi è il turno, se è terminata, vincitore...)
 
+```json
+{
+    "id": 31,
+    "status": "FINISHED",
+    "currentPlayerId": 1,
+    "winnerId": 1,
+    "winnerEmail": "user1@example.com"
+}
+```
 
-
-
-
-- **/ABANDON**
-  Permette di abbandonare una partita
-
-
-
-
-
-- **/STATUS**
-  Permette di valutare lo stato di una partita(di chi è il turno, se è terminata, vincitore...)
-
-
-
-
-
-
-
-- **/MOVES**
-  Ci restituisce lo storico delle mosse selezionando:
+``` - /MOVES ``` :
+Ci restituisce lo storico delle mosse selezionando:
   - il formato in uscita (PDF o JSON)
   - periodo temporale ( data inferiore, data superiore, periodo)
 
+```json
+[
+    {
+        "id": 69,
+        "playerId": 6,
+        "matchId": 31,
+        "position": 2,
+        "symbol": "X",
+        "createdAt": "2024-07-01T16:09:09.044Z",
+        "updatedAt": "2024-07-01T16:09:09.044Z"
+    },
+    {
+        "id": 70,
+        "playerId": 1,
+        "matchId": 31,
+        "position": 5,
+        "symbol": "O",
+        "createdAt": "2024-07-01T16:10:08.230Z",
+        "updatedAt": "2024-07-01T16:10:08.230Z"
+    },
+    {
+        "id": 71,
+        "playerId": 6,
+        "matchId": 31,
+        "position": 3,
+        "symbol": "X",
+        "createdAt": "2024-07-01T16:11:43.241Z",
+        "updatedAt": "2024-07-01T16:11:43.241Z"
+    },
+    {
+        "id": 72,
+        "playerId": 1,
+        "matchId": 31,
+        "position": 7,
+        "symbol": "O",
+        "createdAt": "2024-07-01T16:12:15.723Z",
+        "updatedAt": "2024-07-01T16:12:15.723Z"
+    },
+    {
+        "id": 73,
+        "playerId": 6,
+        "matchId": 31,
+        "position": 4,
+        "symbol": "X",
+        "createdAt": "2024-07-01T16:12:51.377Z",
+        "updatedAt": "2024-07-01T16:12:51.377Z"
+    },
+    {
+        "id": 74,
+        "playerId": 1,
+        "matchId": 31,
+        "position": 8,
+        "symbol": "O",
+        "createdAt": "2024-07-01T16:13:37.122Z",
+        "updatedAt": "2024-07-01T16:13:37.122Z"
+    },
+    {
+        "id": 75,
+        "playerId": 6,
+        "matchId": 31,
+        "position": 1,
+        "symbol": "X",
+        "createdAt": "2024-07-01T16:29:27.320Z",
+        "updatedAt": "2024-07-01T16:29:27.320Z"
+    },
+    {
+        "id": 76,
+        "playerId": 1,
+        "matchId": 31,
+        "position": 6,
+        "symbol": "O",
+        "createdAt": "2024-07-01T16:30:12.546Z",
+        "updatedAt": "2024-07-01T16:30:12.546Z"
+    }
+]
+```
 
 
+``` - /LEADERBOARD ``` :
+Ci restituisce la classifica secondo il punteggio ottenuto calcolando il numero di partite vinte e partite vinte per abbandono.
+
+```json
+{
+    "leaderboard": [
+        {
+            "email": "user1@example.com",
+            "matchesWon": 1,
+            "matchesLost": 0,
+            "matchesWonByAbandon": 0,
+            "matchesLostByAbandon": 0,
+            "matchesWonVsAI": 0,
+            "matchesLostVsAI": 0,
+            "totalScore": 1
+        },
+        {
+            "email": "user2@example.com",
+            "matchesWon": 0,
+            "matchesLost": 0,
+            "matchesWonByAbandon": 0,
+            "matchesLostByAbandon": 0,
+            "matchesWonVsAI": 0,
+            "matchesLostVsAI": 0,
+            "totalScore": 0
+        },
+        {
+            "email": "user3@example.com",
+            "matchesWon": 0,
+            "matchesLost": 0,
+            "matchesWonByAbandon": 0,
+            "matchesLostByAbandon": 0,
+            "matchesWonVsAI": 2,
+            "matchesLostVsAI": 1,
+            "totalScore": 0
+        },
+        {
+            "email": "user4@example.com",
+            "matchesWon": 0,
+            "matchesLost": 0,
+            "matchesWonByAbandon": 0,
+            "matchesLostByAbandon": 0,
+            "matchesWonVsAI": 0,
+            "matchesLostVsAI": 0,
+            "totalScore": 0
+        },
+        {
+            "email": "ai@ai.com",
+            "matchesWon": 0,
+            "matchesLost": 0,
+            "matchesWonByAbandon": 0,
+            "matchesLostByAbandon": 0,
+            "matchesWonVsAI": 1,
+            "matchesLostVsAI": 2,
+            "totalScore": 0
+        },
+        {
+            "email": "user6@example.com",
+            "matchesWon": 0,
+            "matchesLost": 1,
+            "matchesWonByAbandon": 0,
+            "matchesLostByAbandon": 0,
+            "matchesWonVsAI": 0,
+            "matchesLostVsAI": 0,
+            "totalScore": 0
+        }
+    ]
+}
+```
 
 
+``` - /RECHARGE ``` :
+Rotta per l'utente con ruolo 'admin' che consente di effettuare la ricarica per un utente fornendo la mail
 
+```json
+{
+    "message": "Credit recharged successfully",
+    "newCredit": 8
+}
+```
 
-- **/LEADERBOARD**
-  Ci restituisce la classifica secondo il punteggio ottenuto calcolando il numero di partite vinte e partite vinte per abbandono.
+``` - /CREDIT ``` :
+Consente all'utente di vedere il proprio credito 
 
-
-
-
-
-
-- **/RECHARGE**
-  Rotta per l'utente con ruolo 'admin' che consente di effettuare la ricarica per un utente fornendo la mail
-
-
-
-
-
-
-- **/CREDIT**
-  Consente all'utente di vedere il proprio credito 
+```json
+{
+    "credit": 8
+}
+```
