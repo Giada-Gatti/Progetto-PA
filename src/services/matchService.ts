@@ -1,3 +1,4 @@
+import { AppError } from '../middleware/errorHandler';
 import { Match, Move, User } from '../models';
 import { Status } from '../models/Match';
 import { Role } from '../models/User';
@@ -21,19 +22,19 @@ class MatchService {
   public async makeMove(matchId: number, playerId: number, position: number): Promise<Match> {
     const match = await Match.findByPk(matchId);
     if (!match) {
-      throw new Error('Match not found');
+      throw new AppError('Match not found',404);
     }
 
     if (match.status !== Status.ACTIVE) {
-      throw new Error('Match is not active');
+      throw new AppError('Match is not active',401);
     }
     //controllo giocatori ammessi alla partita
     if( match.player1Id !== playerId && match.player2Id !== playerId){
-      throw new Error ('You are not a player in this match');
+      throw new AppError ('You are not a player in this match',401);
     }
 
     if (match.currentPlayerId !== playerId) {
-      throw new Error('It\'s not your turn');
+      throw new AppError('It\'s not your turn',401);
     }
 
     // Verifica il limite di tempo
@@ -50,13 +51,13 @@ class MatchService {
         this.incrMatchesWonOrLose(winnerId, loserId, match.isAgainstAI, false);
         
         await match.save();
-        throw new Error('Time limit exceeded');
+        throw new AppError('Time limit exceeded',401);
       }
     }
     
 
     if (match.board[position] !== '-') {
-      throw new Error('Invalid move');
+      throw new AppError('Invalid move',401);
     }
 
     match.lastMoveAt = new Date();
@@ -129,15 +130,15 @@ class MatchService {
   public async abandonMatch(matchId: number, playerId: number): Promise<Match> {
     const match = await Match.findByPk(matchId);
     if (!match) {
-      throw new Error('Match not found');
+      throw new AppError('Match not found',404);
     }
 
     if (match.status != Status.ACTIVE ) {
-      throw new Error('Match is not active');
+      throw new AppError('Match is not active',401);
     }
 
     if (match.player1Id !== playerId && match.player2Id !== playerId) {
-      throw new Error('You are not a player in this match');
+      throw new AppError('You are not a player in this match',401);
     }
 
     match.status = Status.ABANDONED;
@@ -161,12 +162,12 @@ class MatchService {
         const loserUser = await User.findByPk(loserId);
         
         if( !winnerUser ) {
-          throw new Error('Winner not found');
+          throw new AppError('Winner not found',404);
         } 
         
 
         if( !loserUser ) {
-          throw new Error('Loser not found');
+          throw new AppError('Loser not found',404);
         } 
 
         if( abandonMatch) {

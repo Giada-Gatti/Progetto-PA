@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {User} from '../models/User';
+import { AppError } from '../middleware/errorHandler';
 
 export const rechargeCredit = async (req: Request, res: Response) => {
   const { email, credit } = req.body;
@@ -7,7 +8,7 @@ export const rechargeCredit = async (req: Request, res: Response) => {
   try {
     const user = await User.findOne({ where: { email } });
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      throw new AppError( 'User not found',404 );
     }
 
     user.credit += credit;
@@ -15,6 +16,8 @@ export const rechargeCredit = async (req: Request, res: Response) => {
 
     res.json({ message: 'Credit recharged successfully', newCredit: user.credit });
   } catch (error) {
-    res.status(500).json({ message: 'Error recharging credit', error });
+    if (error instanceof AppError) {
+      return res.status(error.statusCode).json({ message: error.message });
+    }
   }
 };

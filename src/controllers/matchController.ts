@@ -5,6 +5,7 @@ import { Move, Symbol } from '../models/Move';
 import matchService from '../services/matchService';
 import { Op } from 'sequelize';
 import { generatePDF } from '../services/pdfService';
+import { AppError } from '../middleware/errorHandler';
 
 
 
@@ -16,12 +17,12 @@ export const getMatchStatus = async (req: Request, res: Response) => {
   try {
     const match = await Match.findByPk(matchId);
     if (!match) {
-      return res.status(404).json({ error: 'Match not found.' });
+      throw new AppError('Match not found', 404);
     }
 
     
     if (match.player1Id !== userId && match.player2Id !== userId) {
-      return res.status(403).json({ error: 'Unauthorized: You are not a player of this match.' });
+      throw new AppError('Unauthorized: You are not a player of this match', 403);
     }
 
     // Ottieni lo stato attuale della partita (turno, stato, vincitore, ecc.)
@@ -67,10 +68,10 @@ export const abandonMatch = async (req: Request, res: Response) => {
     // Verifica se l'utente è uno dei giocatori della partita
     const match = await matchService.abandonMatch(matchId,playerId);
     if (!match) {
-      return res.status(404).json({ error: 'Match not found.' });
+      throw new AppError('Match not found', 404);
     }
     if (match.player1Id !== playerId && match.player2Id !== playerId) {
-      return res.status(403).json({ error: 'Unauthorized: You are not a player of this match.' });
+      throw new AppError('Unauthorized: You are not a player of this match', 403);
     }
     res.status(200).json({ message: 'Match abandoned successfully.' });
   } catch (error) {
@@ -156,11 +157,11 @@ export const createMatch = async (req: Request, res: Response) => {
     const currentPlayer = await User.findByPk(currentPlayerId);
 
     if (currentPlayer == null) {
-      return res.status(404).json({ error: 'User not found' });
+      throw new AppError('User not found', 404);
     }
 
     if(currentPlayer?.matchId != null){
-      return res.status(400).json({ error: 'User is playing another match' });
+      throw new AppError('User is already playing another match', 400);
     }
 
     // Determina il costo in token in base al tipo di partita
@@ -171,15 +172,15 @@ export const createMatch = async (req: Request, res: Response) => {
     if (isAgainstAI == false) {
 
       if (!opponentEmail) {
-        return res.status(400).json({ error: 'Opponent email is required for user-vs-user match.' });
+        throw new AppError('Opponent email is required for user-vs-user match', 400);
       }
       const opponentUser = await User.findOne({ where: { email: opponentEmail } });
       if (!opponentUser) {
-        return res.status(404).json({ error: 'Opponent user not found.' });
+        throw new AppError('Opponent user not found', 404);
       }
 
       if(opponentUser?.matchId != null){
-        return res.status(400).json({ error: 'Opponent is playing another match' });
+        throw new AppError('Opponent is already playing another match', 400);
       }
 
       player2Id = opponentUser.id;
@@ -187,7 +188,7 @@ export const createMatch = async (req: Request, res: Response) => {
       const opponentAI = await User.findOne({ where: { role: Role.ai } });
 
       if (!opponentAI) {
-        return res.status(404).json({ error: 'Opponent AI not found.' });
+        throw new AppError('Opponent AI not found', 404);
       }
       
       player2Id = opponentAI.id;
@@ -207,10 +208,10 @@ export const createMatch = async (req: Request, res: Response) => {
     // Gestire il credito dell'utente
     const currentUser = await User.findByPk(currentPlayerId);
     if (!currentUser) {
-      return res.status(404).json({ error: 'User not found.' });
+     throw new AppError('User not found',404);
     }
     if (currentUser.credit < costTokens) {
-      return res.status(400).json({ error: 'Insufficient credit to create the match.' });
+     throw new AppError('Insufficient credit to create the match.', 400);
     }
     currentUser.credit -= costTokens;
     await currentUser.save();

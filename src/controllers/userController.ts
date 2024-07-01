@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import {User} from '../models/User';
+import { AppError } from '../middleware/errorHandler';
 
 export const getCredit = async (req: Request, res: Response) => {
   try {
@@ -7,7 +8,7 @@ export const getCredit = async (req: Request, res: Response) => {
     
     const user = await User.findByPk(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+     throw new AppError ('User not found',404 );
     }
 
     res.status(201).json({ credit: user.credit });
