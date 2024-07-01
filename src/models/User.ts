@@ -1,6 +1,8 @@
 import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../database/database';
+import { DatabaseConnection } from '../database/database';
 import bcrypt from 'bcrypt';
+
+const sequelize = DatabaseConnection.getInstance().getSequelize();
 
 export interface AuthenticatedUser {
   id: number;

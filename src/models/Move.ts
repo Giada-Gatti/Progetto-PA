@@ -1,5 +1,7 @@
 import { Model, DataTypes } from 'sequelize';
-import { sequelize } from '../database/database';
+import { DatabaseConnection } from '../database/database';
+
+const sequelize = DatabaseConnection.getInstance().getSequelize();
 
 export enum Symbol {
     X = 'X',

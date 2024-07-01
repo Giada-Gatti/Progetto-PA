@@ -8,7 +8,7 @@ const router = express.Router();
 
 
 router.post('/match',  auth, checkCredit, createMatch);
-router.post('/match/:id/move', auth, checkCredit, makeMove);
+router.post('/match/move', auth, checkCredit, makeMove);
 router.post('/match/:id/abandon', auth, abandonMatch);
 router.get('/match/:id/status', auth, getMatchStatus);
 router.get('/match/moves', auth, getMoveHistory);

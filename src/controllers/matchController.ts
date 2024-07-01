@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Role, User } from '../models/User';
 import { Match, Status } from '../models/Match';
-import { Move, Symbol } from '../models/Move';
+import { Move } from '../models/Move';
 import matchService from '../services/matchService';
 import { Op } from 'sequelize';
 import { generatePDF } from '../services/pdfService';
