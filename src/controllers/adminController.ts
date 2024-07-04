@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import {User} from '../models/User';
 import { AppError } from '../middleware/errorHandler';
 
+//L'utente con ruolo admin può effettuare una ricarica del credito per un utente
 export const rechargeCredit = async (req: Request, res: Response) => {
   const { email, credit } = req.body;
 

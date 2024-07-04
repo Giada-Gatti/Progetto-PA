@@ -1,4 +1,3 @@
-"use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Match = void 0;
 const sequelize_1 = require("sequelize");

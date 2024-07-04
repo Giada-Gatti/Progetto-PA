@@ -14,10 +14,10 @@
     "dialect": "mssql"
   },
   "production": {
-  "username": "user",
-    "password": "user",
-    "database": "TicTacToe",
-    "host": "LAPTOP-4NH6KED8",
+    "username": "${DB_USER}",
+    "password": "${DB_PASS}",
+    "database": "${DB_NAME}",
+    "host": "process.env.DB_HOST",
     "dialect": "mssql"
   }
 }

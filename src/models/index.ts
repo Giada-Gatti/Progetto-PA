@@ -13,4 +13,4 @@ User.hasMany(Move, { foreignKey: 'playerId' });
 Move.belongsTo(Match, { foreignKey: 'matchId',  as: 'match'} );
 Move.belongsTo(User, { foreignKey: 'playerId' });
 
- export { User, Match, Move };
+export { User, Match, Move };

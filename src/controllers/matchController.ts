@@ -26,7 +26,6 @@ export const getMatchStatus = async (req: Request, res: Response) => {
     }
 
     // Ottieni lo stato attuale della partita (turno, stato, vincitore, ecc.)
-    // Esempio: ritorna lo stato della partita in un oggetto JSON
     const user = await User.findByPk(match.winnerId);
     res.status(200).json({
       id: match.id,
@@ -110,10 +109,6 @@ export const getMoveHistory = async (req: Request, res: Response) => {
     res.status(500).json({ message: 'Error fetching move history', error: (error as Error).message });
   }
 };
-
-
-
-   
 
 
 // Funzione per ottenere la classifica
@@ -215,9 +210,6 @@ export const createMatch = async (req: Request, res: Response) => {
     }
     currentUser.credit -= costTokens;
     await currentUser.save();
-
-    // Volendo,   si può restituire l'oggetto utente aggiornato
-    // const updatedUser = await User.findByPk(currentPlayerId);
 
     res.status(201).json({ message: 'Match created successfully.', match: newMatch });
   } catch (error) {

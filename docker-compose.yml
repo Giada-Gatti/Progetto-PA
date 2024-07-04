@@ -1,0 +1,40 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - MSSQL_PID=Developer
+      - MSSQL_DATABASE=TicTacToe
+      - MSSQL_USER=sa
+      - MSSQL_PASSWORD=NuovaPassword123!
+      - MSSQL_IP_ADDRESS=0.0.0.0
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=NuovaPassword123!
+    restart: always
+    ports:
+      - "1433:1433"
+      - "127.0.0.1:1434:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  app:
+      build: .
+      ports:
+        - "3000:3000"
+      depends_on:
+        - db
+      env_file:
+        - .env
+      environment:
+        - DB_HOST=db
+        - DB_USER=sa
+        - DB_PASS=NuovaPassword123!
+        - DB_NAME=TicTacToe
+        - DB_DIALECT=mssql
+        - PUBLIC_KEY=${PUBLIC_KEY}
+        - PRIVATE_KEY=${PRIVATE_KEY}
+        - NODE_ENV=production
+      restart: always
+      command: sh -c "npm run db:reset && npm start"
+volumes:
+  sqlserver_data:
