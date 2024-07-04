@@ -334,3 +334,53 @@ Consente all'utente di vedere il proprio credito
     "credit": 8
 }
 ```
+
+## Progettazione UML 
+
+## Use case
+<p> <img src=Images/Usecase.png width="550" > </p>
+
+## Sequence Diagrams
+
+- Chiamata POST /creatematch :
+  <p><img src=Images/creatematch.png width="550" ></p>
+  
+- Chiamata POST /createmove:
+  <p><img src=Images/createmove.png width="550" ></p>
+  
+- Chiamata GET /HistoryMove:
+  <p><img src=Images/HistoryMove.png width="550" ></p>
+  
+- Chiamata POST /recharge:
+  <p><img src=Images/recharge.png width="550" ></p>
+  
+- Chiamata GET /Leaderboard:
+  <p><img src=Images/Leaderboard.png width="550" ></p>
+
+
+## Progettazione - Pattern 
+## Singleton 
+Il Singleton è stato usato per la connessione al database e per la gestione delle configurazioni. 
+Questo ci assicura una singola istanza per la connessione al database, evitando connessioni multiple che non sono necessarie
+
+## Middleware 
+In questo progetto sfrutta le funzionalità di Express: 
+- Middleare per l'autenticazione
+- Middleware per la gestione degli errori
+
+## Model-View-Controller 
+In questo progetto ci si ispira molto a questo pattern, adattandolo al contesto di un'API backend:
+- Models: definiscono la struttura dei dati e l'interazione con il database
+- View: Sono essenzialmente le risposte JSON.
+- Controller: gestiscono le richieste in entrata
+
+## Avvio del servizio
+- Posizionarsi nella cartella clonata dal seguente repository
+- Avviare il servizio Docker tramite il comando:
+```
+   docker-compose up --build
+```
+- Eseguire le richieste sulla porta 3000 tramite Postman
+
+## Autori 
+- Giada Gatti
